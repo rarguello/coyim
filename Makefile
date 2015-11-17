@@ -49,10 +49,7 @@ lint:
 test:
 	go test -cover -v -tags $(GTK_BUILD_TAG) ./...
 
-clean-gui-test:
-	$(RM) gui-test/*
-
-gui-test: clean-gui-test
+gui-test:
 ifeq ($(shell uname), Linux)
 	git clone https://github.com/twstrike/coyim-testing.git gui-test
 	echo $$COYIM_PATH
