@@ -49,7 +49,7 @@ lint:
 test:
 	go test -cover -v -tags $(GTK_BUILD_TAG) ./...
 
-gui-test:
+gui-test: build-gui
 ifeq ($(shell uname), Linux)
 	git clone https://github.com/twstrike/coyim-testing.git gui-test
 	cd gui-test && COYIM_PATH=$(PWD)/bin/coyim behave --stop
