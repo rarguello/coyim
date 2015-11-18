@@ -56,7 +56,7 @@ ifeq ($(shell uname), Linux)
 	cd gui-test && COYIM_PATH=$(PWD)/bin/coyim behave --stop
 endif
 
-ci: get default coveralls
+ci: get default coveralls gui-test
 
 run-cover: clean-cover
 	go test -coverprofile=xmpp.coverprofile ./xmpp
