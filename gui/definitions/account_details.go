@@ -63,18 +63,20 @@ func (*defAccountDetails) String() string {
           </object>
         </child>
       </object>
-    </child>
-    <child type="action">
-      <object class="GtkButton" id="cancel">
-        <property name="label" translatable="yes">Cancel</property>
-        <signal name="clicked" handler="on_cancel_signal"/>
-      </object>
-    </child>
-    <child type="action">
-      <object class="GtkButton" id="save">
-        <property name="label" translatable="yes">Save</property>
-        <property name="can-default">true</property>
-        <signal name="clicked" handler="on_save_signal"/>
+      <object class="GtkHBox" id="Hbox">
+        <child>
+          <object class="GtkButton" id="cancel">
+            <property name="label" translatable="yes">Cancel</property>
+            <signal name="clicked" handler="on_cancel_signal"/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="save">
+            <property name="label" translatable="yes">Save</property>
+            <property name="can-default">true</property>
+            <signal name="clicked" handler="on_save_signal"/>
+          </object>
+        </child>
       </object>
     </child>
   </object>
