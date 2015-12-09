@@ -24,13 +24,19 @@ environment:
       METHOD: cross
       MSYS2_BASEVER: 20150916
 install:
-  - where openssl
+  - appveyor DownloadFile https://slproweb.com/download/Win32OpenSSL-1_0_2e.exe
+  - Start-Process "Win32OpenSSL-1_0_2e.exe" -ArgumentList "/silent /verysilent /sp- /suppressmsgboxes" -Wait
+  - SET PATH=C:\OpenSSL-Win32\bin;%PATH%
+  - set OPENSSL_CONF=c:\OpenSSL-Win32\bin\openssl.cfg
   - appveyor DownloadFile https://www.geotrust.com/resources/root_certificates/certificates/GeoTrust_Global_CA.pem
   - appveyor DownloadFile https://www.geotrust.com/resources/root_certificates/certificates/GeoTrust_Primary_CA.pem
   - appveyor DownloadFile https://www.geotrust.com/resources/root_certificates/certificates/Geotrust_PCA_G3_Root.pem
   - certreq -machine -Accept .\GeoTrust_Global_CA.pem
   - certreq -machine -Accept .\GeoTrust_Primary_CA.pem
   - certreq -machine -Accept .\Geotrust_PCA_G3_Root.pem
+  - xcopy .\GeoTrust_Global_CA.pem c:\OpenSSL-Win32\bin\PEM\
+  - xcopy .\GeoTrust_Primary_CA.pem c:\OpenSSL-Win32\bin\PEM\
+  - xcopy .\Geotrust_PCA_G3_Root.pem c:\OpenSSL-Win32\bin\PEM\
   - mkdir %GOPATH%\src\github.com\twstrike\
   - xcopy %APPVEYOR_BUILD_FOLDER%\* %GOPATH%\src\github.com\twstrike\coyim /e /i /EXCLUDE:%MSYS_PATH% > $nul
   - if "%METHOD%"=="ci" SET MSYS_PATH=c:\msys64
@@ -57,6 +63,10 @@ install:
   - '%MSYS_PATH%\usr\bin\bash -lc "pacman --noconfirm --needed -Sy mingw-w64-%MSYS2_ARCH%-pkg-config" > $nul'
   - '%MSYS_PATH%\usr\bin\bash -lc "yes|pacman --noconfirm -Sc" > $nul'
   - if "%METHOD%"=="cross" %MSYS_PATH%\autorebase.bat > $nul
+  - '%MSYS_PATH%\usr\bin\bash -lc "mkdir -p /etc/ssl/certs/"'
+  - '%MSYS_PATH%\usr\bin\bash -lc "cp GeoTrust_Global_CA.pem /etc/ssl/certs/"'
+  - '%MSYS_PATH%\usr\bin\bash -lc "cp GeoTrust_Primary_CA.pem /etc/ssl/certs/"'
+  - '%MSYS_PATH%\usr\bin\bash -lc "cp Geotrust_PCA_G3_Root.pem /etc/ssl/certs/"'
   - '%MSYS_PATH%\usr\bin\bash -lc "cd /c/gopath/src/github.com/twstrike/coyim && make deps-u"'
 build_script:
   - '%MSYS_PATH%\usr\bin\bash -lc "cd /c/gopath/src/github.com/twstrike/coyim && make build-gui"'
