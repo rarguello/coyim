@@ -59,4 +59,5 @@ before_deploy:
   - '%MSYS_PATH%\usr\bin\bash -lc "pacman --noconfirm --needed -Sy sed" > $nul'
   - '%MSYS_PATH%\usr\bin\bash -lc "cd /c/gopath/src/github.com/twstrike/coyim && ci/release"'
 deploy_script:
+  - ruby -rnet/https -e "Net::HTTP.get URI('https://api.bintray.com')"
   - '%MSYS_PATH%\usr\bin\bash -lc "gem install dpl --no-ri --no-rdoc && cd /c/gopath/src/github.com/twstrike/coyim && dpl --provider=bintray --file=ci/bintray.json --user=%BINTRAY_USER% --key=%BINTRAY_APIKEY%"'
