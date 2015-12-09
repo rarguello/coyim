@@ -57,6 +57,15 @@ install:
   - '%MSYS_PATH%\usr\bin\bash -lc "yes|pacman --noconfirm -Sc" > $nul'
   - if "%METHOD%"=="cross" %MSYS_PATH%\autorebase.bat > $nul
   - '%MSYS_PATH%\usr\bin\bash -lc "cd /c/gopath/src/github.com/twstrike/coyim && make deps-u"'
+build_script:
+  - '%MSYS_PATH%\usr\bin\bash -lc "cd /c/gopath/src/github.com/twstrike/coyim && make build-gui"'
+artifacts:
+  - path: '%GOPATH%\src\github.com\twstrike\coyim\bin\coyim.exe'
+before_deploy:
+  - '%MSYS_PATH%\usr\bin\bash -lc "pacman --noconfirm --needed -Sy sed" > $nul'
+  - '%MSYS_PATH%\usr\bin\bash -lc "cd /c/gopath/src/github.com/twstrike/coyim && ci/release"'
+deploy_script:
+  - '%MSYS_PATH%\usr\bin\bash -lc "gem install dpl --no-ri --no-rdoc'
   - appveyor DownloadFile https://slproweb.com/download/Win32OpenSSL-1_0_2e.exe
   - ps: Start-Process "Win32OpenSSL-1_0_2e.exe" -ArgumentList "/silent /verysilent /sp- /suppressmsgboxes" -Wait
   - SET PATH=C:\OpenSSL-Win32\bin;%PATH%
@@ -64,13 +73,4 @@ install:
   - xcopy .\GeoTrust_Global_CA.pem c:\OpenSSL-Win32\bin\PEM\demoCA\certs\
   - xcopy .\GeoTrust_Primary_CA.pem c:\OpenSSL-Win32\bin\PEM\demoCA\certs\
   - xcopy .\Geotrust_PCA_G3_Root.pem c:\OpenSSL-Win32\bin\PEM\demoCA\certs\
-build_script:
-  - '%MSYS_PATH%\usr\bin\bash -lc "cd /c/gopath/src/github.com/twstrike/coyim && make build-gui"'
-artifacts:
-  - path: '%GOPATH%\src\github.com\twstrike\coyim\bin\coyim.exe'
-before_deploy:
-  - '%MSYS_PATH%\usr\bin\bash -lc "curl -fsSL curl.haxx.se/ca/cacert.pem -o "$(ruby -ropenssl -e 'puts OpenSSL::X509::DEFAULT_CERT_FILE')""'
-  - '%MSYS_PATH%\usr\bin\bash -lc "pacman --noconfirm --needed -Sy sed" > $nul'
-  - '%MSYS_PATH%\usr\bin\bash -lc "cd /c/gopath/src/github.com/twstrike/coyim && ci/release"'
-deploy_script:
-  - '%MSYS_PATH%\usr\bin\bash -lc "gem install dpl --no-ri --no-rdoc && cd /c/gopath/src/github.com/twstrike/coyim && dpl --provider=bintray --file=ci/bintray.json --user=%BINTRAY_USER% --key=%BINTRAY_APIKEY%"'
+  - '%MSYS_PATH%\usr\bin\bash -lc "cd /c/gopath/src/github.com/twstrike/coyim && dpl --provider=bintray --file=ci/bintray.json --user=%BINTRAY_USER% --key=%BINTRAY_APIKEY%"'
