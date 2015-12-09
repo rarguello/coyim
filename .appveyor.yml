@@ -24,17 +24,39 @@ environment:
       METHOD: cross
       MSYS2_BASEVER: 20150916
 install:
-  - SET PATH=C:\Ruby%RUBY_VERSION%\bin;%PATH%
-  - ruby -rnet/https -e "Net::HTTP.get URI('https://api.bintray.com')"
-  - appveyor DownloadFile https://www.geotrust.com/resources/root_certificates/certificates/GeoTrust_Global_CA.pem
-  - appveyor DownloadFile https://www.geotrust.com/resources/root_certificates/certificates/GeoTrust_Primary_CA.pem
-  - appveyor DownloadFile https://www.geotrust.com/resources/root_certificates/certificates/Geotrust_PCA_G3_Root.pem
-  - certreq -machine -Accept .\GeoTrust_Global_CA.pem
-  - certreq -machine -Accept .\GeoTrust_Primary_CA.pem
-  - certreq -machine -Accept .\Geotrust_PCA_G3_Root.pem
-  - xcopy .\GeoTrust_Global_CA.pem c:\ssl\certs\
-  - xcopy .\GeoTrust_Primary_CA.pem c:\ssl\certs\
-  - xcopy .\Geotrust_PCA_G3_Root.pem c:\ssl\certs\
-  - SET SSL_CERT_DIR=c:\ssl\certs\
-  - ruby -rnet/https -e "Net::HTTP.get URI('https://api.bintray.com')"
-  - ruby -ropenssl -e 'puts OpenSSL::X509::DEFAULT_CERT_FILE'
+  - mkdir %GOPATH%\src\github.com\twstrike\
+  - xcopy %APPVEYOR_BUILD_FOLDER%\* %GOPATH%\src\github.com\twstrike\coyim /e /i /EXCLUDE:%MSYS_PATH% > $nul
+  - dir %GOPATH%\src\github.com\twstrike\coyim
+  - if "%METHOD%"=="ci" SET MSYS_PATH=c:\msys64
+  - if "%METHOD%"=="cross" SET MSYS_PATH=%APPVEYOR_BUILD_FOLDER%\msys%MSYS2_BITS%
+  - if "%METHOD%"=="cross" appveyor DownloadFile http://kent.dl.sourceforge.net/project/msys2/Base/%MSYS2_ARCH%/msys2-base-%MSYS2_ARCH%-%MSYS2_BASEVER%.tar.xz
+  - if "%METHOD%"=="cross" 7z x msys2-base-%MSYS2_ARCH%-%MSYS2_BASEVER%.tar.xz > $nul
+  - if "%METHOD%"=="cross" 7z x msys2-base-%MSYS2_ARCH%-%MSYS2_BASEVER%.tar > $nul
+  - SET PATH=%MSYS_PATH%\usr\bin;%PATH%
+  - SET PATH=%MSYS_PATH%\mingw%MSYS2_BITS%\bin;%PATH%
+  - '%MSYS_PATH%\usr\bin\bash -lc "echo update-core starting..." 2> $nul'
+  - '%MSYS_PATH%\usr\bin\bash -lc "update-core" > $nul'
+  - '%MSYS_PATH%\usr\bin\bash -lc "echo install-deps starting..."'
+  - '%MSYS_PATH%\usr\bin\bash -lc "pacman --noconfirm --needed -Sy autoconf" > $nul'
+  - '%MSYS_PATH%\usr\bin\bash -lc "pacman --noconfirm --needed -Sy automake" > $nul'
+  - '%MSYS_PATH%\usr\bin\bash -lc "pacman --noconfirm --needed -Sy make" > $nul'
+  - '%MSYS_PATH%\usr\bin\bash -lc "pacman --noconfirm --needed -Sy mingw-w64-%MSYS2_ARCH%-libiconv" > $nul'
+  - '%MSYS_PATH%\usr\bin\bash -lc "pacman --noconfirm --needed -Sy mingw-w64-%MSYS2_ARCH%-gcc" > $nul'
+  - '%MSYS_PATH%\usr\bin\bash -lc "pacman --noconfirm --needed -Sy mingw-w64-%MSYS2_ARCH%-gdb" > $nul'
+  - '%MSYS_PATH%\usr\bin\bash -lc "pacman --noconfirm --needed -Sy mingw-w64-%MSYS2_ARCH%-make" > $nul'
+  - '%MSYS_PATH%\usr\bin\bash -lc "pacman --noconfirm --needed -Sy zlib-devel" > $nul'
+  - '%MSYS_PATH%\usr\bin\bash -lc "pacman --noconfirm --needed -Sy mingw-w64-%MSYS2_ARCH%-pango" > $nul'
+  - '%MSYS_PATH%\usr\bin\bash -lc "pacman --noconfirm --needed -Sy mingw-w64-%MSYS2_ARCH%-gtk3" > $nul'
+  - '%MSYS_PATH%\usr\bin\bash -lc "pacman --noconfirm --needed -Sy mingw-w64-%MSYS2_ARCH%-pkg-config" > $nul'
+  - '%MSYS_PATH%\usr\bin\bash -lc "yes|pacman --noconfirm -Sc" > $nul'
+  - if "%METHOD%"=="cross" %MSYS_PATH%\autorebase.bat > $nul
+  - '%MSYS_PATH%\usr\bin\bash -lc "cd /c/gopath/src/github.com/twstrike/coyim && make deps-u"'
+build_script:
+  - '%MSYS_PATH%\usr\bin\bash -lc "cd /c/gopath/src/github.com/twstrike/coyim && make build-gui"'
+artifacts:
+  - path: '%GOPATH%\src\github.com\twstrike\coyim\bin\coyim.exe'
+before_deploy:
+  - '%MSYS_PATH%\usr\bin\bash -lc "pacman --noconfirm --needed -Sy sed" > $nul'
+  - '%MSYS_PATH%\usr\bin\bash -lc "cd /c/gopath/src/github.com/twstrike/coyim && ci/release"'
+deploy_script:
+  - '%MSYS_PATH%\usr\bin\bash -lc "gem install dpl --no-ri --no-rdoc && cd /c/gopath/src/github.com/twstrike/coyim && dpl --provider=bintray --file=ci/bintray.json --user=%BINTRAY_USER% --key=%BINTRAY_APIKEY%"'
