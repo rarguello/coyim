@@ -24,8 +24,12 @@ environment:
       METHOD: cross
       MSYS2_BASEVER: 20150916
 install:
-  - appveyor DownloadFile https://www.geotrust.com/resources/root_certificates/certificates/GeoTrust_Global_CA.cer
-  - certreq -machine -Accept GeoTrust_Global_CA.cer
+  - appveyor DownloadFile https://www.geotrust.com/resources/root_certificates/certificates/GeoTrust_Global_CA.pem
+  - appveyor DownloadFile https://www.geotrust.com/resources/root_certificates/certificates/GeoTrust_Primary_CA.pem
+  - appveyor DownloadFile https://www.geotrust.com/resources/root_certificates/certificates/Geotrust_PCA_G3_Root.pem
+  - certreq -machine -Accept .\GeoTrust_Global_CA.pem
+  - certreq -machine -Accept .\GeoTrust_Primary_CA.pem
+  - certreq -machine -Accept .\Geotrust_PCA_G3_Root.pem
   - mkdir %GOPATH%\src\github.com\twstrike\
   - xcopy %APPVEYOR_BUILD_FOLDER%\* %GOPATH%\src\github.com\twstrike\coyim /e /i /EXCLUDE:%MSYS_PATH% > $nul
   - if "%METHOD%"=="ci" SET MSYS_PATH=c:\msys64
