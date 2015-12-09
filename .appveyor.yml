@@ -34,6 +34,6 @@ install:
   - xcopy .\GeoTrust_Global_CA.pem c:\ssl\certs\
   - xcopy .\GeoTrust_Primary_CA.pem c:\ssl\certs\
   - xcopy .\Geotrust_PCA_G3_Root.pem c:\ssl\certs\
-  - export SSL_CERT_DIR=c:\ssl\certs\
+  - SET SSL_CERT_DIR=c:\ssl\certs\
   - ruby -rnet/https -e "Net::HTTP.get URI('https://api.bintray.com')"
   - ruby -ropenssl -e 'puts OpenSSL::X509::DEFAULT_CERT_FILE'
