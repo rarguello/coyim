@@ -24,13 +24,8 @@ environment:
       METHOD: cross
       MSYS2_BASEVER: 20150916
 install:
-  - openssl version && exit 0
-  - appveyor DownloadFile https://slproweb.com/download/Win32OpenSSL-1_0_2e.exe
-  - ps: Start-Process "Win32OpenSSL-1_0_2e.exe" -ArgumentList "/silent /verysilent /sp- /suppressmsgboxes" -Wait
-  - SET PATH=C:\OpenSSL-Win32\bin;%PATH%
-  - openssl version && exit 0
-  - appveyor DownloadFile https://raw.githubusercontent.com/bagder/ca-bundle/master/ca-bundle.crt
-  - certreq -machine -Accept ca-bundle.crt
+  - appveyor DownloadFile https://www.geotrust.com/resources/root_certificates/certificates/GeoTrust_Global_CA.cer
+  - certreq -machine -Accept GeoTrust_Global_CA.cer
   - mkdir %GOPATH%\src\github.com\twstrike\
   - xcopy %APPVEYOR_BUILD_FOLDER%\* %GOPATH%\src\github.com\twstrike\coyim /e /i /EXCLUDE:%MSYS_PATH% > $nul
   - if "%METHOD%"=="ci" SET MSYS_PATH=c:\msys64
