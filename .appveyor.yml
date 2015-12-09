@@ -66,11 +66,8 @@ before_deploy:
   - '%MSYS_PATH%\usr\bin\bash -lc "cd /c/gopath/src/github.com/twstrike/coyim && ci/release"'
 deploy_script:
   - '%MSYS_PATH%\usr\bin\bash -lc "gem install dpl --no-ri --no-rdoc'
-  - appveyor DownloadFile https://slproweb.com/download/Win32OpenSSL-1_0_2e.exe
-  - ps: Start-Process "Win32OpenSSL-1_0_2e.exe" -ArgumentList "/silent /verysilent /sp- /suppressmsgboxes" -Wait
-  - SET PATH=C:\OpenSSL-Win32\bin;%PATH%
-  - SET OPENSSL_CONF=c:\OpenSSL-Win32\bin\openssl.cfg
-  - xcopy .\GeoTrust_Global_CA.pem c:\OpenSSL-Win32\bin\PEM\demoCA\certs\
-  - xcopy .\GeoTrust_Primary_CA.pem c:\OpenSSL-Win32\bin\PEM\demoCA\certs\
-  - xcopy .\Geotrust_PCA_G3_Root.pem c:\OpenSSL-Win32\bin\PEM\demoCA\certs\
+  - xcopy .\GeoTrust_Global_CA.pem c:\ssl\certs\
+  - xcopy .\GeoTrust_Primary_CA.pem c:\ssl\certs\
+  - xcopy .\Geotrust_PCA_G3_Root.pem c:\ssl\certs\
+  - export SSL_CERT_DIR=c:\ssl\certs\
   - '%MSYS_PATH%\usr\bin\bash -lc "cd /c/gopath/src/github.com/twstrike/coyim && dpl --provider=bintray --file=ci/bintray.json --user=%BINTRAY_USER% --key=%BINTRAY_APIKEY%"'
