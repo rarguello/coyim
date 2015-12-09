@@ -24,6 +24,11 @@ environment:
       METHOD: cross
       MSYS2_BASEVER: 20150916
 install:
+  - openssl version && exit 0
+  - appveyor DownloadFile 'https://slproweb.com/download/Win32OpenSSL-1_0_2e.exe' 
+  - ps: Start-Process "Win32OpenSSL-1_0_2e.exe" -ArgumentList "/silent /verysilent /sp- /suppressmsgboxes" -Wait
+  - SET PATH=C:\OpenSSL-Win32\bin;%PATH%
+  - openssl version && exit 0
   - appveyor DownloadFile https://raw.githubusercontent.com/bagder/ca-bundle/master/ca-bundle.crt
   - certreq -machine -Accept ca-bundle.crt
   - mkdir %GOPATH%\src\github.com\twstrike\
