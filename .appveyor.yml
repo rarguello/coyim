@@ -60,6 +60,6 @@ before_deploy:
 deploy_script:
   - gem install dpl --no-ri --no-rdoc
   - appveyor https://raw.githubusercontent.com/bagder/ca-bundle/master/ca-bundle.crt
-  - xcopy ca-bundle.crt C:\ssl\certs\ca-bundle.crt
+  - xcopy ca-bundle.crt C:\ssl\certs\
   - set SSL_CERT_FILE=C:\ssl\certs\ca-bundle.crt
   - cd %GOPATH%\src\github.com\twstrike\coyim && dpl --provider=bintray --file=ci/bintray.json --user=%BINTRAY_USER% --key=%BINTRAY_APIKEY%"
