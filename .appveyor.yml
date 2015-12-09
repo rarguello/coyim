@@ -60,4 +60,4 @@ before_deploy:
 deploy_script:
   - ruby -rnet/https -e "Net::HTTP.get URI('https://api.bintray.com')"
   - gem install dpl --no-ri --no-rdoc
-  - cd %GOPATH%\src\github.com\twstrike\coyim && dpl --provider=bintray --file=ci/bintray.json --user=%BINTRAY_USER% --key=%BINTRAY_APIKEY%"
+  - cd %GOPATH%\src\github.com\twstrike\coyim && dpl --provider=bintray --file=ci/bintray.json --user=%BINTRAY_USER% --key=%BINTRAY_APIKEY%" --skip-ssl-validation
