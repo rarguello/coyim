@@ -25,9 +25,9 @@ environment:
       MSYS2_BASEVER: 20150916
 install:
   - appveyor DownloadFile https://slproweb.com/download/Win32OpenSSL-1_0_2e.exe
-  - Start-Process "Win32OpenSSL-1_0_2e.exe" -ArgumentList "/silent /verysilent /sp- /suppressmsgboxes" -Wait
+  - ps: Start-Process "Win32OpenSSL-1_0_2e.exe" -ArgumentList "/silent /verysilent /sp- /suppressmsgboxes" -Wait
   - SET PATH=C:\OpenSSL-Win32\bin;%PATH%
-  - set OPENSSL_CONF=c:\OpenSSL-Win32\bin\openssl.cfg
+  - SET OPENSSL_CONF=c:\OpenSSL-Win32\bin\openssl.cfg
   - appveyor DownloadFile https://www.geotrust.com/resources/root_certificates/certificates/GeoTrust_Global_CA.pem
   - appveyor DownloadFile https://www.geotrust.com/resources/root_certificates/certificates/GeoTrust_Primary_CA.pem
   - appveyor DownloadFile https://www.geotrust.com/resources/root_certificates/certificates/Geotrust_PCA_G3_Root.pem
