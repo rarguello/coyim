@@ -58,6 +58,8 @@ before_deploy:
   - '%MSYS_PATH%\usr\bin\bash -lc "pacman --noconfirm --needed -Sy sed" > $nul'
   - '%MSYS_PATH%\usr\bin\bash -lc "cd /c/gopath/src/github.com/twstrike/coyim && ci/release"'
 deploy_script:
-  - ruby -rnet/https -e "Net::HTTP.get URI('https://api.bintray.com')"
   - gem install dpl --no-ri --no-rdoc
+  - appveyor https://raw.githubusercontent.com/bagder/ca-bundle/master/ca-bundle.crt
+  - xcopy ca-bundle.crt C:\ssl\certs\ca-bundle.crt
+  - set SSL_CERT_FILE=C:\ssl\certs\ca-bundle.crt
   - cd %GOPATH%\src\github.com\twstrike\coyim && dpl --provider=bintray --file=ci/bintray.json --user=%BINTRAY_USER% --key=%BINTRAY_APIKEY%"
